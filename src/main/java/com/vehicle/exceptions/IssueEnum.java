@@ -9,7 +9,7 @@ import java.util.IllegalFormatException;
 import java.util.Objects;
 
 public enum IssueEnum {
-  YEAR_OF_MANUFACTURE_IS_LESS(1, "The vehicle's year of manufacture cannot be less than 2000"),
+  YEAR_OF_MANUFACTURE_IS_LESS(1, "The vehicle's year: %s of manufacture cannot be less than 2000"),
   BAD_REQUEST(2, "Malformed Request"),
   JSON_DESERIALIZE_ERROR(3, "We could not fully understand your message, please check commas, double quotation marks or appropriate values of fields according to the documentation."),
   MANDATORY_COUNTRY_NOT_GLOBAL_COLLECTION(4, "Error: 'country' is mandatory for persistence/find in database for collection: %s");
