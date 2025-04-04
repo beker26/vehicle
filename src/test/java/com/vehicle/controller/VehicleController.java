@@ -31,6 +31,7 @@ import static com.vehicle.mock.VehiclePutResponseMock.getVehiclePutResponse;
 import static net.bytebuddy.implementation.bytecode.constant.IntegerConstant.FOUR;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -92,6 +93,29 @@ class VehicleControllerTest {
                 .andExpect(jsonPath("$.year").value(request.getYear()))
                 .andExpect(jsonPath("$.description").value(request.getDescription()))
                 .andExpect(jsonPath("$.sold").value(request.getSold()));
+    }
+
+    @Test
+    void shouldDeleteAVehicleSuccessfully() throws Exception {
+        Mockito.doNothing().when(vehicleService).deleteVehicle(eq(ID));
+
+        mockMvc.perform(delete(URL_VEHICLES + SLASH + ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+
+    @Test
+    void shouldDeleteAVehicleNotFoundException() throws Exception {
+
+        Mockito.doThrow(NotFoundException.vehicleDoesNotExistInTheDatabase())
+                .when(vehicleService).deleteVehicle(eq(ID_NOT_EXIST));
+
+        mockMvc.perform(delete(URL_VEHICLES + SLASH + ID_NOT_EXIST)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(THREE))
+                .andExpect(jsonPath("$.message").value(VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE));
     }
 
     @Test

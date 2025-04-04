@@ -6,6 +6,7 @@ import com.vehicle.domains.vos.v1.requests.VehiclePutRequest;
 import com.vehicle.domains.vos.v1.responses.VehiclePostResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePutResponse;
 import com.vehicle.repositories.VehicleRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -25,7 +26,7 @@ public class VehicleService {
         this.vehicleRepository = vehicleRepository;
     }
 
-
+    @Transactional
     public VehiclePostResponse createNewVehicle(final VehiclePostRequest vehiclePostRequest) {
 
         final Vehicle vehicle = fromVehiclePostRequestToVehicle(vehiclePostRequest);
@@ -37,6 +38,7 @@ public class VehicleService {
         return vehiclePostResponse;
     }
 
+    @Transactional
     public VehiclePutResponse updateVehicle(final Long id, final VehiclePutRequest vehiclePutRequest) {
 
         final Optional<Vehicle> findVehicle = vehicleRepository.findById(id);
@@ -50,5 +52,15 @@ public class VehicleService {
         final VehiclePutResponse vehiclePutResponse = fromVehiclePutResponseToVehicle(savedVehicle);
 
         return vehiclePutResponse;
+    }
+
+    @Transactional
+    public void deleteVehicle(final Long id) {
+
+        final Optional<Vehicle> findVehicle = vehicleRepository.findById(id);
+
+        validateIfTheVehicleExistsInTheDatabase(findVehicle);
+
+        vehicleRepository.delete(findVehicle.get());
     }
 }
