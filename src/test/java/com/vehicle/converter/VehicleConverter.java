@@ -1,15 +1,18 @@
 package com.vehicle.converter;
 
 import com.vehicle.domains.Vehicle;
+import com.vehicle.domains.vos.v1.responses.VehicleCountResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePostResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePutResponse;
 import org.junit.jupiter.api.Test;
 
+import static com.vehicle.converters.VehicleConverter.fromCountVehicleGetResponseToCountVehicle;
 import static com.vehicle.converters.VehicleConverter.fromVehiclePostRequestToVehicle;
 import static com.vehicle.converters.VehicleConverter.fromVehiclePostResponseToVehicle;
 import static com.vehicle.converters.VehicleConverter.fromVehiclePutRequestToVehicle;
 import static com.vehicle.converters.VehicleConverter.fromVehiclePutResponseToVehicle;
 import static com.vehicle.mock.MockedValues.ID;
+import static com.vehicle.mock.MockedValues.THREE;
 import static com.vehicle.mock.VehicleMock.getVehicleMock;
 import static com.vehicle.mock.VehiclePostRequestMock.getVehiclePostRequest;
 import static com.vehicle.mock.VehiclePutRequestMock.getVehiclePutRequest;
@@ -48,5 +51,13 @@ public class VehicleConverter {
         final Vehicle vehicle = fromVehiclePutRequestToVehicle(ID, getVehiclePutRequest());
 
         assertNotNull(vehicle);
+    }
+
+    @Test
+    void shouldConverterCountVehicleGetResponseToCountVehicle() {
+
+        final VehicleCountResponse countVehicle = fromCountVehicleGetResponseToCountVehicle(THREE);
+
+        assertNotNull(countVehicle);
     }
 }

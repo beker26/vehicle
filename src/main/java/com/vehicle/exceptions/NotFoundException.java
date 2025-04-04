@@ -14,4 +14,8 @@ public class NotFoundException extends GlobalException {
 
       return new NotFoundException(new Issue(IssueEnum.VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE));
     }
+
+  public static NotFoundException thereAreNoActiveVehiclesInTheBase() {
+    return new NotFoundException(new Issue(IssueEnum.VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE));
+  }
 }

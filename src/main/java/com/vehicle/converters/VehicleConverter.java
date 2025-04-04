@@ -3,6 +3,7 @@ package com.vehicle.converters;
 import com.vehicle.domains.Vehicle;
 import com.vehicle.domains.vos.v1.requests.VehiclePostRequest;
 import com.vehicle.domains.vos.v1.requests.VehiclePutRequest;
+import com.vehicle.domains.vos.v1.responses.VehicleCountResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePostResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePutResponse;
 
@@ -38,6 +39,12 @@ public class VehicleConverter {
                 .build();
 
         return vehicleBuilder;
+    }
+
+    public static VehicleCountResponse fromCountVehicleGetResponseToCountVehicle(Integer countVehicles){
+        return VehicleCountResponse.builder()
+                .vehicleNumbers(countVehicles)
+                .build();
     }
 
 
