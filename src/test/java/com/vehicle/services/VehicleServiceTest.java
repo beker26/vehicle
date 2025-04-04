@@ -18,6 +18,8 @@ import java.util.Optional;
 
 import static com.vehicle.exceptions.IssueEnum.VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE;
 import static com.vehicle.exceptions.IssueEnum.VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE;
+import static com.vehicle.mock.MockedValues.BRAND_BYD;
+import static com.vehicle.mock.MockedValues.BRAND_TOYOTA;
 import static com.vehicle.mock.MockedValues.FALSE;
 import static com.vehicle.mock.MockedValues.ID;
 import static com.vehicle.mock.MockedValues.ID_NOT_EXIST;
@@ -144,7 +146,7 @@ public class VehicleServiceTest {
 
         when(vehicleRepository.countVehiclesNotSold(FALSE)).thenReturn(THREE);
 
-        VehicleCountResponse countVehiclesNotSold = vehicleService.getCountVehiclesNotSold();
+        final VehicleCountResponse countVehiclesNotSold = vehicleService.getCountVehiclesNotSold();
 
         assertNotNull(countVehiclesNotSold);
         assertEquals(THREE, countVehiclesNotSold.getVehicleNumbers());
@@ -170,9 +172,9 @@ public class VehicleServiceTest {
     @Test
     void shouldCountVehiclesByYearOfManufactureSuccessfully() {
 
-        when(vehicleRepository.countVehiclesForYear(YEAR_2007)).thenReturn(THREE);
+        when(vehicleRepository.countVehiclesByYear(YEAR_2007)).thenReturn(THREE);
 
-        VehicleCountResponse countVehiclesForYear = vehicleService.getVehiclesByYearOfManufacture(YEAR_2007);
+        final VehicleCountResponse countVehiclesForYear = vehicleService.getVehiclesByYearOfManufacture(YEAR_2007);
 
         assertNotNull(countVehiclesForYear);
         assertEquals(THREE, countVehiclesForYear.getVehicleNumbers());
@@ -181,13 +183,41 @@ public class VehicleServiceTest {
     @Test
     void shouldCountVehiclesByYearOfManufactureNotFound() {
 
-        when(vehicleRepository.countVehiclesForYear(YEAR_2007)).thenReturn(ZERO);
+        when(vehicleRepository.countVehiclesByYear(YEAR_2007)).thenReturn(ZERO);
 
         final NotFoundException exception =
                 assertThrows(
                         NotFoundException.class,
                         () -> {
                             vehicleService.getVehiclesByYearOfManufacture(YEAR_2007);
+                        });
+
+        assertEquals(
+                VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE.getFormattedMessage(),
+                exception.getIssue().getMessage());
+    }
+
+    @Test
+    void shouldCountVehiclesByBrandSuccessfully() {
+
+        when(vehicleRepository.countVehiclesByBrand(BRAND_TOYOTA)).thenReturn(THREE);
+
+        final VehicleCountResponse countVehiclesByBrand = vehicleService.getVehiclesByBrand(BRAND_TOYOTA);
+
+        assertNotNull(countVehiclesByBrand);
+        assertEquals(THREE, countVehiclesByBrand.getVehicleNumbers());
+    }
+
+    @Test
+    void shouldCountVehiclesByBrandNotFound() {
+
+        when(vehicleRepository.countVehiclesByBrand(BRAND_BYD)).thenReturn(ZERO);
+
+        final NotFoundException exception =
+                assertThrows(
+                        NotFoundException.class,
+                        () -> {
+                            vehicleService.getVehiclesByBrand(BRAND_BYD);
                         });
 
         assertEquals(

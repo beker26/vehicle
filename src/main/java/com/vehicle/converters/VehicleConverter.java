@@ -41,7 +41,7 @@ public class VehicleConverter {
         return vehicleBuilder;
     }
 
-    public static VehicleCountResponse fromCountVehicleGetResponseToCountVehicle(Integer countVehicles){
+    public static VehicleCountResponse fromCountVehicleGetResponseToCountVehicle(final Integer countVehicles){
         return VehicleCountResponse.builder()
                 .vehicleNumbers(countVehicles)
                 .build();

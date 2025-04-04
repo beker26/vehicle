@@ -81,11 +81,22 @@ public class VehicleService {
 
     public VehicleCountResponse getVehiclesByYearOfManufacture(final Integer year) {
 
-        final Integer countVehiclesForYear = vehicleRepository.countVehiclesForYear(year);
+        final Integer countVehiclesByYear = vehicleRepository.countVehiclesByYear(year);
 
-        validateIfThereAreActiveVehiclesInTheBase(countVehiclesForYear);
+        validateIfThereAreActiveVehiclesInTheBase(countVehiclesByYear);
 
-        final VehicleCountResponse vehicleCountResponse = fromCountVehicleGetResponseToCountVehicle(countVehiclesForYear);
+        final VehicleCountResponse vehicleCountResponse = fromCountVehicleGetResponseToCountVehicle(countVehiclesByYear);
+
+        return vehicleCountResponse;
+    }
+
+    public VehicleCountResponse getVehiclesByBrand(final String brand) {
+
+        final Integer countVehiclesByBrand = vehicleRepository.countVehiclesByBrand(brand);
+
+        validateIfThereAreActiveVehiclesInTheBase(countVehiclesByBrand);
+
+        final VehicleCountResponse vehicleCountResponse = fromCountVehicleGetResponseToCountVehicle(countVehiclesByBrand);
 
         return vehicleCountResponse;
     }
