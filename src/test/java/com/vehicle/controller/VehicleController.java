@@ -24,9 +24,12 @@ import static com.vehicle.mock.MockedValues.ID_NOT_EXIST;
 import static com.vehicle.mock.MockedValues.SLASH;
 import static com.vehicle.mock.MockedValues.THREE;
 import static com.vehicle.mock.MockedValues.URL_COUNT_NOT_SOLD;
+import static com.vehicle.mock.MockedValues.URL_COUNT_YEAR;
 import static com.vehicle.mock.MockedValues.URL_VEHICLES;
 import static com.vehicle.mock.MockedValues.VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE;
 import static com.vehicle.mock.MockedValues.VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE;
+import static com.vehicle.mock.MockedValues.YEAR_1999;
+import static com.vehicle.mock.MockedValues.YEAR_2007;
 import static com.vehicle.mock.VehicleCountResponseMock.getVehicleCountResponseMock;
 import static com.vehicle.mock.VehiclePostRequestMock.getVehiclePostRequest;
 import static com.vehicle.mock.VehiclePostResponseMock.getVehiclePostResponse;
@@ -164,4 +167,32 @@ class VehicleControllerTest {
                 .andExpect(jsonPath("$.code").value(FOUR))
                 .andExpect(jsonPath("$.message").value(VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE));
     }
+
+    @Test
+    void shouldCountVehiclesByYearOfManufactureSuccessfully() throws Exception {
+
+        Mockito.when(vehicleService.getVehiclesByYearOfManufacture(YEAR_2007))
+                .thenReturn(getVehicleCountResponseMock());
+
+        mockMvc.perform(get(URL_VEHICLES + SLASH + YEAR_2007 + URL_COUNT_YEAR)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.vehicleNumbers").value(3));
+    }
+
+    @Test
+    void shouldCountVehiclesByYearOfManufactureNotFound() throws Exception {
+
+        Mockito.when(vehicleService.getVehiclesByYearOfManufacture(YEAR_1999))
+                .thenThrow(NotFoundException.thereAreNoActiveVehiclesInTheBase());
+
+
+        mockMvc.perform(get(URL_VEHICLES + SLASH + YEAR_1999 + URL_COUNT_YEAR)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(FOUR))
+                .andExpect(jsonPath("$.message").value(VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE));
+    }
+
 }

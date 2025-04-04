@@ -7,6 +7,7 @@ public class MockedValues {
     public static final Integer ZERO = 0;
     public static final String URL_VEHICLES = "/vehicles";
     public static final String URL_COUNT_NOT_SOLD = "/count-not-sold";
+    public static final String URL_COUNT_YEAR = "/vehicles-year-manufacture";
     public static final String SLASH = "/";
     public static final Long ID = 1L;
     public static final Long ID_NOT_EXIST = 20L;

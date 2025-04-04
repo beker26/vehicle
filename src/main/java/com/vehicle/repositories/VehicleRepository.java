@@ -10,4 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     @Query(value = "SELECT COUNT(*) FROM vehicle WHERE sold = :sold", nativeQuery = true)
     Integer countVehiclesNotSold(@Param("sold") final Boolean sold);
+
+    @Query(value = "SELECT COUNT(*) FROM vehicle WHERE \"year\" = :year", nativeQuery = true)
+    Integer countVehiclesForYear(@Param("year") final Integer year);
 }

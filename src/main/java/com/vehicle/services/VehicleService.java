@@ -10,7 +10,6 @@ import com.vehicle.repositories.VehicleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 import static com.vehicle.constants.ServiceConstants.FALSE;
@@ -76,6 +75,17 @@ public class VehicleService {
         validateIfThereAreActiveVehiclesInTheBase(countVehicles);
 
         final VehicleCountResponse vehicleCountResponse = fromCountVehicleGetResponseToCountVehicle(countVehicles);
+
+        return vehicleCountResponse;
+    }
+
+    public VehicleCountResponse getVehiclesByYearOfManufacture(final Integer year) {
+
+        final Integer countVehiclesForYear = vehicleRepository.countVehiclesForYear(year);
+
+        validateIfThereAreActiveVehiclesInTheBase(countVehiclesForYear);
+
+        final VehicleCountResponse vehicleCountResponse = fromCountVehicleGetResponseToCountVehicle(countVehiclesForYear);
 
         return vehicleCountResponse;
     }
