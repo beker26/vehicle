@@ -1,9 +1,8 @@
 package com.vehicle.mock;
 
 import com.vehicle.domains.Vehicle;
-import com.vehicle.domains.vos.v1.responses.VehiclePostResponse;
 
-import static com.vehicle.mock.MockedValues.BRAND_ONE;
+import static com.vehicle.mock.MockedValues.BRAND_TOYOTA;
 import static com.vehicle.mock.MockedValues.DESCRIPTION;
 import static com.vehicle.mock.MockedValues.ID;
 import static com.vehicle.mock.MockedValues.SOLD;
@@ -16,7 +15,7 @@ public class VehicleMock {
         return Vehicle.builder()
                 .id(ID)
                 .vehicle(VEHICLE_ONE)
-                .brand(BRAND_ONE)
+                .brand(BRAND_TOYOTA)
                 .year(YEAR_2007)
                 .description(DESCRIPTION)
                 .sold(SOLD)

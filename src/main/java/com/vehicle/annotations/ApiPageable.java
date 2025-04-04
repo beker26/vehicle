@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Parameters({
         @Parameter(name = "page", description = "Page number (starts from 0)", example = "0"),
         @Parameter(name = "size", description = "Page size", example = "10"),
-        @Parameter(name = "sort", description = "Sorting criteria in the format: property(,asc|desc).", example = "name,asc")
+        @Parameter(name = "sort", description = "Sorting criteria in the format: property(,asc|desc).", example = "asc")
 })
 public @interface ApiPageable {
 }

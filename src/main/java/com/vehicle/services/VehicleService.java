@@ -4,20 +4,28 @@ import com.vehicle.domains.Vehicle;
 import com.vehicle.domains.vos.v1.requests.VehiclePostRequest;
 import com.vehicle.domains.vos.v1.requests.VehiclePutRequest;
 import com.vehicle.domains.vos.v1.responses.VehicleCountResponse;
+import com.vehicle.domains.vos.v1.responses.VehicleGetResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePostResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePutResponse;
 import com.vehicle.repositories.VehicleRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static com.vehicle.constants.ServiceConstants.FALSE;
+import static com.vehicle.constants.ServiceConstants.SEVEN;
 import static com.vehicle.converters.VehicleConverter.fromCountVehicleGetResponseToCountVehicle;
+import static com.vehicle.converters.VehicleConverter.fromVehicleGetResponseToVehicle;
 import static com.vehicle.converters.VehicleConverter.fromVehiclePostRequestToVehicle;
 import static com.vehicle.converters.VehicleConverter.fromVehiclePostResponseToVehicle;
 import static com.vehicle.converters.VehicleConverter.fromVehiclePutRequestToVehicle;
 import static com.vehicle.converters.VehicleConverter.fromVehiclePutResponseToVehicle;
+import static com.vehicle.validators.VehicleValidator.validateIfTheListVehicleExistsInTheDatabase;
 import static com.vehicle.validators.VehicleValidator.validateIfTheVehicleExistsInTheDatabase;
 import static com.vehicle.validators.VehicleValidator.validateIfThereAreActiveVehiclesInTheBase;
 
@@ -99,5 +107,18 @@ public class VehicleService {
         final VehicleCountResponse vehicleCountResponse = fromCountVehicleGetResponseToCountVehicle(countVehiclesByBrand);
 
         return vehicleCountResponse;
+    }
+
+    public Page<VehicleGetResponse> getCarRegistrationForLastWeek(final String vehicle, final Pageable pageable) {
+
+        final LocalDateTime lastWeek = LocalDateTime.now().minusDays(SEVEN);
+
+        final Page<Vehicle> vehicles = vehicleRepository.findByVehicleIgnoreCaseAndCreatedAtAfter(vehicle, lastWeek, pageable);
+
+        validateIfTheListVehicleExistsInTheDatabase(vehicles.getContent());
+
+        final Page<VehicleGetResponse> vehicleGetResponse = fromVehicleGetResponseToVehicle(vehicles);
+
+        return vehicleGetResponse;
     }
 }
