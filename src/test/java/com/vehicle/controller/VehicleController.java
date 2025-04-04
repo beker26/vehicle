@@ -18,11 +18,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.vehicle.mock.MockedValues.BRAND_BYD;
+import static com.vehicle.mock.MockedValues.BRAND_TOYOTA;
 import static com.vehicle.mock.MockedValues.FOUR;
 import static com.vehicle.mock.MockedValues.ID;
 import static com.vehicle.mock.MockedValues.ID_NOT_EXIST;
 import static com.vehicle.mock.MockedValues.SLASH;
 import static com.vehicle.mock.MockedValues.THREE;
+import static com.vehicle.mock.MockedValues.URL_COUNT_BRAND;
 import static com.vehicle.mock.MockedValues.URL_COUNT_NOT_SOLD;
 import static com.vehicle.mock.MockedValues.URL_COUNT_YEAR;
 import static com.vehicle.mock.MockedValues.URL_VEHICLES;
@@ -189,6 +192,33 @@ class VehicleControllerTest {
 
 
         mockMvc.perform(get(URL_VEHICLES + SLASH + YEAR_1999 + URL_COUNT_YEAR)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(FOUR))
+                .andExpect(jsonPath("$.message").value(VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE));
+    }
+
+    @Test
+    void shouldCountVehiclesByBrandSuccessfully() throws Exception {
+
+        Mockito.when(vehicleService.getVehiclesByBrand(BRAND_TOYOTA))
+                .thenReturn(getVehicleCountResponseMock());
+
+        mockMvc.perform(get(URL_VEHICLES + SLASH + BRAND_TOYOTA + URL_COUNT_BRAND)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.vehicleNumbers").value(3));
+    }
+
+    @Test
+    void shouldCountVehiclesByBrandNotFound() throws Exception {
+
+        Mockito.when(vehicleService.getVehiclesByBrand(BRAND_BYD))
+                .thenThrow(NotFoundException.thereAreNoActiveVehiclesInTheBase());
+
+
+        mockMvc.perform(get(URL_VEHICLES + SLASH + BRAND_BYD + URL_COUNT_BRAND)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(FOUR))

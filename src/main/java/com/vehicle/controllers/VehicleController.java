@@ -91,4 +91,14 @@ public class VehicleController {
     public ResponseEntity<VehicleCountResponse> getVehiclesByYearOfManufacture(@PathVariable final Integer year) {
         return new ResponseEntity<>(vehicleService.getVehiclesByYearOfManufacture(year), HttpStatus.OK);
     }
+
+    @Operation(summary = "Vehicles by brand.", description = "Get Vehicles by Brand.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Number of vehicles successfully obtained by Brand."),
+            @ApiResponse(responseCode = "404", description = "There are no active vehicles in the base.")
+    })
+    @GetMapping(value = "/{brand}/vehicles-brand", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<VehicleCountResponse> getVehiclesByBrand(@PathVariable final String brand) {
+        return new ResponseEntity<>(vehicleService.getVehiclesByBrand(brand), HttpStatus.OK);
+    }
 }

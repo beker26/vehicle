@@ -12,5 +12,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     Integer countVehiclesNotSold(@Param("sold") final Boolean sold);
 
     @Query(value = "SELECT COUNT(*) FROM vehicle WHERE \"year\" = :year", nativeQuery = true)
-    Integer countVehiclesForYear(@Param("year") final Integer year);
+    Integer countVehiclesByYear(@Param("year") final Integer year);
+
+    @Query(value = "SELECT COUNT(*) FROM vehicle WHERE brand ILIKE :brand", nativeQuery = true)
+    Integer countVehiclesByBrand(@Param("brand") final String brand);
 }
