@@ -22,6 +22,7 @@ import static com.vehicle.mock.MockedValues.FALSE;
 import static com.vehicle.mock.MockedValues.ID;
 import static com.vehicle.mock.MockedValues.ID_NOT_EXIST;
 import static com.vehicle.mock.MockedValues.THREE;
+import static com.vehicle.mock.MockedValues.YEAR_2007;
 import static com.vehicle.mock.MockedValues.ZERO;
 import static com.vehicle.mock.VehicleMock.getVehicleMock;
 import static com.vehicle.mock.VehiclePostRequestMock.getVehiclePostRequest;
@@ -159,6 +160,34 @@ public class VehicleServiceTest {
                         NotFoundException.class,
                         () -> {
                             vehicleService.getCountVehiclesNotSold();
+                        });
+
+        assertEquals(
+                VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE.getFormattedMessage(),
+                exception.getIssue().getMessage());
+    }
+
+    @Test
+    void shouldCountVehiclesByYearOfManufactureSuccessfully() {
+
+        when(vehicleRepository.countVehiclesForYear(YEAR_2007)).thenReturn(THREE);
+
+        VehicleCountResponse countVehiclesForYear = vehicleService.getVehiclesByYearOfManufacture(YEAR_2007);
+
+        assertNotNull(countVehiclesForYear);
+        assertEquals(THREE, countVehiclesForYear.getVehicleNumbers());
+    }
+
+    @Test
+    void shouldCountVehiclesByYearOfManufactureNotFound() {
+
+        when(vehicleRepository.countVehiclesForYear(YEAR_2007)).thenReturn(ZERO);
+
+        final NotFoundException exception =
+                assertThrows(
+                        NotFoundException.class,
+                        () -> {
+                            vehicleService.getVehiclesByYearOfManufacture(YEAR_2007);
                         });
 
         assertEquals(

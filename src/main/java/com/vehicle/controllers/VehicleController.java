@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,7 +37,7 @@ public class VehicleController {
     }
 
 
-    @Operation(summary = "Creates a new vehicle", description = "Creates a new vehicle in the database.")
+    @Operation(summary = "Creates a new vehicle.", description = "Creates a new vehicle in the database.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "New vehicle created successfully.")
     })
@@ -47,10 +48,10 @@ public class VehicleController {
         return new ResponseEntity<>(vehicleService.createNewVehicle(vehiclePostRequest), HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Update a vehicle", description = "Update a vehicle in the database.")
+    @Operation(summary = "Update a vehicle.", description = "Update a vehicle in the database.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vehicle updated successfully"),
-            @ApiResponse(responseCode = "404", description = "Vehicle not found")
+            @ApiResponse(responseCode = "404", description = "The vehicle informed does not exist in the database")
     })
     @PutMapping(
             value = "/{id}",
@@ -60,10 +61,10 @@ public class VehicleController {
         return new ResponseEntity<>(vehicleService.updateVehicle(id, vehiclePutRequest), HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete a vehicle", description = "Delete a vehicle in the database.")
+    @Operation(summary = "Delete a vehicle.", description = "Delete a vehicle in the database.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Vehicle Deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Vehicle not found")
+            @ApiResponse(responseCode = "404", description = "The vehicle informed does not exist in the database")
     })
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -71,12 +72,23 @@ public class VehicleController {
         vehicleService.deleteVehicle(id);
     }
 
-    @Operation(summary = "Vehicles are unsold in the database", description = "Display how many vehicles are unsold in the database.")
+    @Operation(summary = "Vehicles are unsold in the database.", description = "Display how many vehicles are unsold in the database.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Display how many vehicles are unsold in the database.")
+            @ApiResponse(responseCode = "200", description = "Unsold vehicles successfully obtained."),
+            @ApiResponse(responseCode = "404", description = "There are no active vehicles in the base")
     })
     @GetMapping(value = "/count-not-sold", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VehicleCountResponse> getCountVehiclesNotSold() {
         return new ResponseEntity<>(vehicleService.getCountVehiclesNotSold(), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Vehicles by year of manufacture.", description = "Get vehicles by year of manufacture.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Number of vehicles successfully obtained by year of manufacture."),
+            @ApiResponse(responseCode = "404", description = "There are no active vehicles in the base.")
+    })
+    @GetMapping(value = "/{year}/vehicles-year-manufacture", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<VehicleCountResponse> getVehiclesByYearOfManufacture(@PathVariable final Integer year) {
+        return new ResponseEntity<>(vehicleService.getVehiclesByYearOfManufacture(year), HttpStatus.OK);
     }
 }
