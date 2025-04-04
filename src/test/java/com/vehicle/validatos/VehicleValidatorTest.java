@@ -1,12 +1,13 @@
 package com.vehicle.validatos;
 
-import com.vehicle.exceptions.BadRequestException;
 import com.vehicle.exceptions.Issue;
 import com.vehicle.exceptions.IssueEnum;
-import com.vehicle.validators.VehicleValidator;
+import com.vehicle.exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 
-import static com.vehicle.mock.MockedValues.YEAR_1999;
+import java.util.Optional;
+
+import static com.vehicle.validators.VehicleValidator.validateIfTheVehicleExistsInTheDatabase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -14,13 +15,15 @@ public class VehicleValidatorTest {
 
 
     @Test
-    void shouldGiveExceptionWhenYearIsLessThan2000() {
-        final BadRequestException badRequestException =
+    void shouldGiveExceptionWhenTheVehicleDoesNotExistInTheBase() {
+
+        final NotFoundException notFoundException =
                 assertThrows(
-                        BadRequestException.class, () -> VehicleValidator.validateIfYearOfManufactureIsLess(YEAR_1999));
+                        NotFoundException.class, () ->  validateIfTheVehicleExistsInTheDatabase(Optional.empty()));
         assertEquals(
-                new Issue(IssueEnum.YEAR_OF_MANUFACTURE_IS_LESS, YEAR_1999).getMessage(),
-                badRequestException.getMessage());
+                new Issue(IssueEnum.VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE).getMessage(),
+                notFoundException.getMessage());
     }
+
 
 }

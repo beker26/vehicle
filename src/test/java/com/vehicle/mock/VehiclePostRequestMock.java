@@ -1,6 +1,7 @@
 package com.vehicle.mock;
 
 import com.vehicle.domains.vos.v1.requests.VehiclePostRequest;
+import com.vehicle.domains.vos.v1.requests.VehiclePutRequest;
 
 import static com.vehicle.mock.MockedValues.BRAND_ONE;
 import static com.vehicle.mock.MockedValues.DESCRIPTION;
