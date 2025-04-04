@@ -18,20 +18,24 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.vehicle.mock.MockedValues.FOUR;
 import static com.vehicle.mock.MockedValues.ID;
 import static com.vehicle.mock.MockedValues.ID_NOT_EXIST;
 import static com.vehicle.mock.MockedValues.SLASH;
 import static com.vehicle.mock.MockedValues.THREE;
+import static com.vehicle.mock.MockedValues.URL_COUNT_NOT_SOLD;
 import static com.vehicle.mock.MockedValues.URL_VEHICLES;
+import static com.vehicle.mock.MockedValues.VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE;
 import static com.vehicle.mock.MockedValues.VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE;
+import static com.vehicle.mock.VehicleCountResponseMock.getVehicleCountResponseMock;
 import static com.vehicle.mock.VehiclePostRequestMock.getVehiclePostRequest;
 import static com.vehicle.mock.VehiclePostResponseMock.getVehiclePostResponse;
 import static com.vehicle.mock.VehiclePutRequestMock.getVehiclePutRequest;
 import static com.vehicle.mock.VehiclePutResponseMock.getVehiclePutResponse;
-import static net.bytebuddy.implementation.bytecode.constant.IntegerConstant.FOUR;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -132,5 +136,32 @@ class VehicleControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code").value(THREE))
                 .andExpect(jsonPath("$.message").value(VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE));
+    }
+
+    @Test
+    void shouldCountVehiclesNotSaleSuccessfully() throws Exception {
+
+        Mockito.when(vehicleService.getCountVehiclesNotSold())
+                .thenReturn(getVehicleCountResponseMock());
+
+        mockMvc.perform(get(URL_VEHICLES + URL_COUNT_NOT_SOLD)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.vehicleNumbers").value(3));
+    }
+
+    @Test
+    void shouldCountVehiclesNotSaleNotFound() throws Exception {
+
+        Mockito.when(vehicleService.getCountVehiclesNotSold())
+                .thenThrow(NotFoundException.thereAreNoActiveVehiclesInTheBase());
+
+
+        mockMvc.perform(get(URL_VEHICLES + URL_COUNT_NOT_SOLD)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(FOUR))
+                .andExpect(jsonPath("$.message").value(VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE));
     }
 }

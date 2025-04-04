@@ -3,6 +3,7 @@ package com.vehicle.services;
 import com.vehicle.domains.Vehicle;
 import com.vehicle.domains.vos.v1.requests.VehiclePostRequest;
 import com.vehicle.domains.vos.v1.requests.VehiclePutRequest;
+import com.vehicle.domains.vos.v1.responses.VehicleCountResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePostResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePutResponse;
 import com.vehicle.exceptions.NotFoundException;
@@ -15,9 +16,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
+import static com.vehicle.exceptions.IssueEnum.VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE;
 import static com.vehicle.exceptions.IssueEnum.VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE;
+import static com.vehicle.mock.MockedValues.FALSE;
 import static com.vehicle.mock.MockedValues.ID;
 import static com.vehicle.mock.MockedValues.ID_NOT_EXIST;
+import static com.vehicle.mock.MockedValues.THREE;
+import static com.vehicle.mock.MockedValues.ZERO;
 import static com.vehicle.mock.VehicleMock.getVehicleMock;
 import static com.vehicle.mock.VehiclePostRequestMock.getVehiclePostRequest;
 import static com.vehicle.mock.VehiclePutRequestMock.getVehiclePutRequest;
@@ -103,7 +108,8 @@ public class VehicleServiceTest {
                 assertThrows(
                         NotFoundException.class,
                         () -> {
-                            vehicleService.deleteVehicle(ID);;
+                            vehicleService.deleteVehicle(ID);
+                            ;
                         });
 
 
@@ -129,6 +135,34 @@ public class VehicleServiceTest {
 
         assertEquals(
                 VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE.getFormattedMessage(),
+                exception.getIssue().getMessage());
+    }
+
+    @Test
+    void shouldCountVehiclesNotSaleSuccessfully() {
+
+        when(vehicleRepository.countVehiclesNotSold(FALSE)).thenReturn(THREE);
+
+        VehicleCountResponse countVehiclesNotSold = vehicleService.getCountVehiclesNotSold();
+
+        assertNotNull(countVehiclesNotSold);
+        assertEquals(THREE, countVehiclesNotSold.getVehicleNumbers());
+    }
+
+    @Test
+    void shouldCountVehiclesNotSaleNotFound() {
+
+        when(vehicleRepository.countVehiclesNotSold(FALSE)).thenReturn(ZERO);
+
+        final NotFoundException exception =
+                assertThrows(
+                        NotFoundException.class,
+                        () -> {
+                            vehicleService.getCountVehiclesNotSold();
+                        });
+
+        assertEquals(
+                VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE.getFormattedMessage(),
                 exception.getIssue().getMessage());
     }
 }

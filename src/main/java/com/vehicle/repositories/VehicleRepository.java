@@ -2,8 +2,12 @@ package com.vehicle.repositories;
 
 import com.vehicle.domains.Vehicle;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
+    @Query(value = "SELECT COUNT(*) FROM vehicle WHERE sold = :sold", nativeQuery = true)
+    Integer countVehiclesNotSold(@Param("sold") final Boolean sold);
 }
