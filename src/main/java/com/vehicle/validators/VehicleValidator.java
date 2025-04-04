@@ -20,4 +20,8 @@ public class VehicleValidator {
     public static void validateIfThereAreActiveVehiclesInTheBase(final Integer countVehicles){
         if(countVehicles.compareTo(ZERO) == ZERO) throw NotFoundException.thereAreNoActiveVehiclesInTheBase();
     }
+
+    public static void validateIfTheListVehicleExistsInTheDatabase(final List<Vehicle> vehicles){
+        if (ObjectUtils.isEmpty(vehicles)) throw NotFoundException.thereAreNoActiveVehiclesInTheBase();
+    }
 }

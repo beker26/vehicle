@@ -4,8 +4,14 @@ import com.vehicle.domains.Vehicle;
 import com.vehicle.domains.vos.v1.requests.VehiclePostRequest;
 import com.vehicle.domains.vos.v1.requests.VehiclePutRequest;
 import com.vehicle.domains.vos.v1.responses.VehicleCountResponse;
+import com.vehicle.domains.vos.v1.responses.VehicleGetResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePostResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePutResponse;
+import org.springframework.data.domain.Page;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class VehicleConverter {
 
@@ -45,6 +51,16 @@ public class VehicleConverter {
         return VehicleCountResponse.builder()
                 .vehicleNumbers(countVehicles)
                 .build();
+    }
+
+    public static Page<VehicleGetResponse> fromVehicleGetResponseToVehicle(final Page<Vehicle> vehicles) {
+        return vehicles.map(vehicle -> VehicleGetResponse.builder()
+                .vehicle(vehicle.getVehicle())
+                .brand(vehicle.getBrand())
+                .year(vehicle.getYear())
+                .description(vehicle.getDescription())
+                .sold(vehicle.getSold())
+                .build());
     }
 
 

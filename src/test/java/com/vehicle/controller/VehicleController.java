@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vehicle.controllers.VehicleController;
 import com.vehicle.domains.vos.v1.requests.VehiclePostRequest;
 import com.vehicle.domains.vos.v1.requests.VehiclePutRequest;
+import com.vehicle.domains.vos.v1.responses.VehicleGetResponse;
 import com.vehicle.exceptions.GlobalExceptionHandler;
 import com.vehicle.exceptions.NotFoundException;
 import com.vehicle.services.VehicleService;
@@ -14,26 +15,41 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.List;
 
 import static com.vehicle.mock.MockedValues.BRAND_BYD;
 import static com.vehicle.mock.MockedValues.BRAND_TOYOTA;
 import static com.vehicle.mock.MockedValues.FOUR;
 import static com.vehicle.mock.MockedValues.ID;
 import static com.vehicle.mock.MockedValues.ID_NOT_EXIST;
+import static com.vehicle.mock.MockedValues.ONE;
+import static com.vehicle.mock.MockedValues.ONE_LONG;
+import static com.vehicle.mock.MockedValues.ONE_STRING;
 import static com.vehicle.mock.MockedValues.SLASH;
 import static com.vehicle.mock.MockedValues.THREE;
+import static com.vehicle.mock.MockedValues.URL_CAR_REGISTRATION_WEEK;
 import static com.vehicle.mock.MockedValues.URL_COUNT_BRAND;
 import static com.vehicle.mock.MockedValues.URL_COUNT_NOT_SOLD;
 import static com.vehicle.mock.MockedValues.URL_COUNT_YEAR;
 import static com.vehicle.mock.MockedValues.URL_VEHICLES;
 import static com.vehicle.mock.MockedValues.VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE;
+import static com.vehicle.mock.MockedValues.VEHICLE_CAR;
 import static com.vehicle.mock.MockedValues.VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE;
 import static com.vehicle.mock.MockedValues.YEAR_1999;
 import static com.vehicle.mock.MockedValues.YEAR_2007;
+import static com.vehicle.mock.MockedValues.ZERO;
+import static com.vehicle.mock.MockedValues.ZERO_STRING;
 import static com.vehicle.mock.VehicleCountResponseMock.getVehicleCountResponseMock;
+import static com.vehicle.mock.VehicleGetResponseMock.getVehicleGetResponse;
 import static com.vehicle.mock.VehiclePostRequestMock.getVehiclePostRequest;
 import static com.vehicle.mock.VehiclePostResponseMock.getVehiclePostResponse;
 import static com.vehicle.mock.VehiclePutRequestMock.getVehiclePutRequest;
@@ -65,6 +81,7 @@ class VehicleControllerTest {
     void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(vehicleController)
                 .setControllerAdvice(new GlobalExceptionHandler())
+                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .build();
     }
     @Test
@@ -217,8 +234,41 @@ class VehicleControllerTest {
         Mockito.when(vehicleService.getVehiclesByBrand(BRAND_BYD))
                 .thenThrow(NotFoundException.thereAreNoActiveVehiclesInTheBase());
 
-
         mockMvc.perform(get(URL_VEHICLES + SLASH + BRAND_BYD + URL_COUNT_BRAND)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(FOUR))
+                .andExpect(jsonPath("$.message").value(VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE));
+    }
+
+    @Test
+    void shouldReturnSuccessfullyWhenNoCarsRegisteredLastWeek() throws Exception {
+
+        final Pageable pageable = PageRequest.of(ZERO, ONE);
+
+        final Page<VehicleGetResponse> page = new PageImpl<>(List.of(getVehicleGetResponse()), pageable, ONE_LONG);
+
+        Mockito.when(vehicleService.getCarRegistrationForLastWeek(eq(VEHICLE_CAR), eq(pageable)))
+                .thenReturn(page);
+
+        mockMvc.perform(get(URL_VEHICLES + SLASH + VEHICLE_CAR + URL_CAR_REGISTRATION_WEEK)
+                        .param("page", ZERO_STRING)
+                        .param("size", ONE_STRING)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenNoCarsRegisteredLastWeek() throws Exception {
+
+        final Pageable pageable = PageRequest.of(ZERO, ONE);
+
+        Mockito.lenient().when(vehicleService.getCarRegistrationForLastWeek(eq(VEHICLE_CAR), eq(pageable)))
+                .thenThrow(NotFoundException.thereAreNoActiveVehiclesInTheBase());
+
+        mockMvc.perform(get(URL_VEHICLES + SLASH + VEHICLE_CAR + URL_CAR_REGISTRATION_WEEK)
+                        .param("page", ZERO_STRING)
+                        .param("size", ONE_STRING)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(FOUR))

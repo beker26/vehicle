@@ -5,9 +5,13 @@ import com.vehicle.exceptions.IssueEnum;
 import com.vehicle.exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.vehicle.mock.MockedValues.ZERO;
+import static com.vehicle.mock.VehicleGetResponseMock.getVehicleGetResponse;
+import static com.vehicle.mock.VehicleMock.getVehicleMock;
+import static com.vehicle.validators.VehicleValidator.validateIfTheListVehicleExistsInTheDatabase;
 import static com.vehicle.validators.VehicleValidator.validateIfTheVehicleExistsInTheDatabase;
 import static com.vehicle.validators.VehicleValidator.validateIfThereAreActiveVehiclesInTheBase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,6 +37,17 @@ public class VehicleValidatorTest {
         final NotFoundException notFoundException =
                 assertThrows(
                         NotFoundException.class, () ->  validateIfThereAreActiveVehiclesInTheBase(ZERO));
+        assertEquals(
+                new Issue(IssueEnum.VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE).getMessage(),
+                notFoundException.getMessage());
+    }
+
+    @Test
+    void shouldIfTheListVehicleExistsInTheDatabase() {
+
+        final NotFoundException notFoundException =
+                assertThrows(
+                        NotFoundException.class, () ->  validateIfTheListVehicleExistsInTheDatabase(List.of()));
         assertEquals(
                 new Issue(IssueEnum.VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE).getMessage(),
                 notFoundException.getMessage());

@@ -1,9 +1,11 @@
 package com.vehicle.services;
 
+import com.vehicle.constants.ServiceConstants;
 import com.vehicle.domains.Vehicle;
 import com.vehicle.domains.vos.v1.requests.VehiclePostRequest;
 import com.vehicle.domains.vos.v1.requests.VehiclePutRequest;
 import com.vehicle.domains.vos.v1.responses.VehicleCountResponse;
+import com.vehicle.domains.vos.v1.responses.VehicleGetResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePostResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePutResponse;
 import com.vehicle.exceptions.NotFoundException;
@@ -12,8 +14,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static com.vehicle.exceptions.IssueEnum.VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE;
@@ -23,15 +32,22 @@ import static com.vehicle.mock.MockedValues.BRAND_TOYOTA;
 import static com.vehicle.mock.MockedValues.FALSE;
 import static com.vehicle.mock.MockedValues.ID;
 import static com.vehicle.mock.MockedValues.ID_NOT_EXIST;
+import static com.vehicle.mock.MockedValues.ONE;
+import static com.vehicle.mock.MockedValues.ONE_LONG;
+import static com.vehicle.mock.MockedValues.SEVEN;
+import static com.vehicle.mock.MockedValues.SEVEN_LONG;
 import static com.vehicle.mock.MockedValues.THREE;
+import static com.vehicle.mock.MockedValues.VEHICLE_ONE;
 import static com.vehicle.mock.MockedValues.YEAR_2007;
 import static com.vehicle.mock.MockedValues.ZERO;
+import static com.vehicle.mock.MockedValues.ZERO_LONG;
 import static com.vehicle.mock.VehicleMock.getVehicleMock;
 import static com.vehicle.mock.VehiclePostRequestMock.getVehiclePostRequest;
 import static com.vehicle.mock.VehiclePutRequestMock.getVehiclePutRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -97,8 +113,8 @@ public class VehicleServiceTest {
 
         vehicleService.deleteVehicle(ID);
 
-        verify(vehicleRepository, times(1)).findById(eq(ID));
-        verify(vehicleRepository, times(1)).delete(vehicleMock);
+        verify(vehicleRepository, times(ONE)).findById(eq(ID));
+        verify(vehicleRepository, times(ONE)).delete(vehicleMock);
     }
 
 
@@ -219,6 +235,44 @@ public class VehicleServiceTest {
                         () -> {
                             vehicleService.getVehiclesByBrand(BRAND_BYD);
                         });
+
+        assertEquals(
+                VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE.getFormattedMessage(),
+                exception.getIssue().getMessage());
+    }
+
+
+    @Test
+    void shouldReturnVehiclesWhenCarsRegisteredLastWeekSuccessfully() {
+
+        final Pageable pageable = PageRequest.of(ZERO, ONE);
+
+        final Page<Vehicle> page = new PageImpl<>(List.of(getVehicleMock()), pageable, ONE_LONG);
+
+        Mockito.when(vehicleRepository.findByVehicleIgnoreCaseAndCreatedAtAfter(eq(VEHICLE_ONE), any(LocalDateTime.class), eq(pageable)))
+                .thenReturn(page);
+
+        final Page<VehicleGetResponse> result = vehicleService.getCarRegistrationForLastWeek(VEHICLE_ONE, pageable);
+
+        assertNotNull(result);
+        assertEquals(ONE_LONG, result.getTotalElements());
+        assertEquals(VEHICLE_ONE, result.getContent().get(ZERO).getVehicle());
+    }
+
+    @Test
+    void shouldThrowNotFoundExceptionWhenNoCarsRegisteredLastWeek() {
+
+        final Pageable pageable = PageRequest.of(ZERO, ONE);
+
+        final Page<Vehicle> emptyPage = new PageImpl<>(List.of(), pageable, ZERO_LONG);
+
+        Mockito.when(vehicleRepository.findByVehicleIgnoreCaseAndCreatedAtAfter(eq(VEHICLE_ONE), any(LocalDateTime.class), eq(pageable)))
+                .thenReturn(emptyPage);
+
+        final NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> vehicleService.getCarRegistrationForLastWeek(VEHICLE_ONE, pageable)
+        );
 
         assertEquals(
                 VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE.getFormattedMessage(),
