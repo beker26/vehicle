@@ -25,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -76,6 +79,39 @@ public class VehicleServiceTest {
         assertEquals(vehicleMock.getDescription(), vehiclePutResponse.getDescription());
     }
 
+
+    @Test
+    void shouldDeleteAVehicleSuccessfully() {
+        final Vehicle vehicleMock = getVehicleMock();
+
+        when(vehicleRepository.findById(eq(ID))).thenReturn(Optional.of(vehicleMock));
+        doNothing().when(vehicleRepository).delete(vehicleMock);
+
+        vehicleService.deleteVehicle(ID);
+
+        verify(vehicleRepository, times(1)).findById(eq(ID));
+        verify(vehicleRepository, times(1)).delete(vehicleMock);
+    }
+
+
+    @Test
+    void shouldDeleteAVehicleNotFound() {
+
+        when(vehicleRepository.findById(eq(ID))).thenReturn(Optional.empty());
+
+        final NotFoundException exception =
+                assertThrows(
+                        NotFoundException.class,
+                        () -> {
+                            vehicleService.deleteVehicle(ID);;
+                        });
+
+
+        verify(vehicleRepository, times(1)).findById(eq(ID));
+        assertEquals(
+                VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE.getFormattedMessage(),
+                exception.getIssue().getMessage());
+    }
 
     @Test
     void shouldUpdateAVehicleNotFound() {
