@@ -10,8 +10,8 @@ public class NotFoundException extends GlobalException {
     super(issue);
   }
 
-  public static NotFoundException noEntityFoundForPage(
-      final String entityName, final Integer pageSize) {
-    return new NotFoundException(new Issue(IssueEnum.MANDATORY_COUNTRY_NOT_GLOBAL_COLLECTION, entityName, pageSize));
-  }
+    public static NotFoundException vehicleDoesNotExistInTheDatabase() {
+
+      return new NotFoundException(new Issue(IssueEnum.VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE));
+    }
 }

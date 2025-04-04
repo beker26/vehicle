@@ -12,7 +12,4 @@ public class BadRequestException extends GlobalException {
     super(issue);
   }
 
-    public static BadRequestException yearOfManufactureIsLess(Integer year) {
-      return new BadRequestException(new Issue(IssueEnum.YEAR_OF_MANUFACTURE_IS_LESS, year));
-    }
 }
