@@ -4,6 +4,7 @@ public class MockedValues {
 
     public static final Integer THREE = 3;
     public static final Integer FOUR = 4;
+    public static final Integer FIVE = 5;
     public static final Integer ZERO = 0;
     public static final long ZERO_LONG = 0;
     public static final Integer ONE = 1;
@@ -22,9 +23,11 @@ public class MockedValues {
     public static final Long ID_NOT_EXIST = 20L;
     public static final String VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE = "The vehicle informed does not exist in the database";
     public static final String VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE = "There are no active vehicles in the base";
+    public static final String THE_NUMBER_OF_THE_YEAR_IS_DIFFERENT_FROM_FOUR = "The year number is different from 4";
     public static final String VEHICLE_ONE = "Car";
     public static final Integer YEAR_1999 = 1999;
     public static final Integer YEAR_2007 = 2007;
+    public static final Integer YEAR_DIFFERENT = 20;
     public static final String BRAND_TOYOTA = "Toyota";
     public static final String BRAND_BYD = "Byd";
     public static final String VEHICLE_CAR = "Car";

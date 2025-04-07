@@ -24,7 +24,6 @@ import static com.vehicle.mock.MockedValues.ONE;
 import static com.vehicle.mock.MockedValues.ONE_LONG;
 import static com.vehicle.mock.MockedValues.THREE;
 import static com.vehicle.mock.MockedValues.ZERO;
-import static com.vehicle.mock.VehicleGetResponseMock.getVehicleGetResponse;
 import static com.vehicle.mock.VehicleMock.getVehicleMock;
 import static com.vehicle.mock.VehiclePostRequestMock.getVehiclePostRequest;
 import static com.vehicle.mock.VehiclePutRequestMock.getVehiclePutRequest;

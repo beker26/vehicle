@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static com.vehicle.constants.ServiceConstants.FALSE;
@@ -28,6 +27,7 @@ import static com.vehicle.converters.VehicleConverter.fromVehiclePutResponseToVe
 import static com.vehicle.validators.VehicleValidator.validateIfTheListVehicleExistsInTheDatabase;
 import static com.vehicle.validators.VehicleValidator.validateIfTheVehicleExistsInTheDatabase;
 import static com.vehicle.validators.VehicleValidator.validateIfThereAreActiveVehiclesInTheBase;
+import static com.vehicle.validators.VehicleValidator.validatesIfTheYearHasFourNumbers;
 
 @Service
 public class VehicleService {
@@ -41,6 +41,8 @@ public class VehicleService {
     @Transactional
     public VehiclePostResponse createNewVehicle(final VehiclePostRequest vehiclePostRequest) {
 
+        validatesIfTheYearHasFourNumbers(vehiclePostRequest.getYear());
+
         final Vehicle vehicle = fromVehiclePostRequestToVehicle(vehiclePostRequest);
 
         final Vehicle savedVehicle = vehicleRepository.save(vehicle);
@@ -52,6 +54,8 @@ public class VehicleService {
 
     @Transactional
     public VehiclePutResponse updateVehicle(final Long id, final VehiclePutRequest vehiclePutRequest) {
+
+        validatesIfTheYearHasFourNumbers(vehiclePutRequest.getYear());
 
         final Optional<Vehicle> findVehicle = vehicleRepository.findById(id);
 

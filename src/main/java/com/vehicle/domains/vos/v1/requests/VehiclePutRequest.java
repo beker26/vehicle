@@ -11,6 +11,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static com.vehicle.constants.VehicleRequestConstants.DESCRIPTION;
+import static com.vehicle.constants.VehicleRequestConstants.DESCRIPTION_BRAND;
+import static com.vehicle.constants.VehicleRequestConstants.DESCRIPTION_SOLD;
+import static com.vehicle.constants.VehicleRequestConstants.DESCRIPTION_VEHICLE;
+import static com.vehicle.constants.VehicleRequestConstants.DESCRIPTION_YEAR;
+import static com.vehicle.constants.VehicleRequestConstants.EXAMPLE_BRAND;
+import static com.vehicle.constants.VehicleRequestConstants.EXAMPLE_DESCRIPTION;
+import static com.vehicle.constants.VehicleRequestConstants.EXAMPLE_SOLD;
+import static com.vehicle.constants.VehicleRequestConstants.EXAMPLE_VEHICLE;
+import static com.vehicle.constants.VehicleRequestConstants.EXAMPLE_YEAR;
+
 @Builder
 @Getter
 @Setter
@@ -18,26 +29,26 @@ import lombok.Setter;
 @AllArgsConstructor
 public class VehiclePutRequest {
 
-    @Schema(required = true, description = "Vehicle Name", example = "Hatch Car")
+    @Schema(required = true, description = DESCRIPTION_VEHICLE, example = EXAMPLE_VEHICLE)
     @Size(min = 1, max = 50)
     @NotBlank
     private String vehicle;
 
-    @Schema(required = true, description = "Vehicle brand", example = "Toyota")
+    @Schema(required = true, description = DESCRIPTION_BRAND, example = EXAMPLE_BRAND)
     @Size(min = 1, max = 50)
     @NotBlank
     private String brand;
 
-    @Schema(required = true, description = "Vehicle manufacture year", example = "2007")
+    @Schema(required = true, description = DESCRIPTION_YEAR, example = EXAMPLE_YEAR)
     @NotNull
     private Integer year;
 
-    @Schema(required = true, description = "Vehicle description", example = "Reliable car with good fuel efficiency")
+    @Schema(required = true, description = DESCRIPTION, example = EXAMPLE_DESCRIPTION)
     @Size(min = 1, max = 1000)
     @NotBlank
     private String description;
 
-    @Schema(required = true, description = "Tag to check if the vehicle has been sold", example = "false")
+    @Schema(required = true, description = DESCRIPTION_SOLD, example = EXAMPLE_SOLD)
     @NotNull
     private Boolean sold;
 }
