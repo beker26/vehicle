@@ -5,6 +5,7 @@ import com.vehicle.controllers.VehicleController;
 import com.vehicle.domains.vos.v1.requests.VehiclePostRequest;
 import com.vehicle.domains.vos.v1.requests.VehiclePutRequest;
 import com.vehicle.domains.vos.v1.responses.VehicleGetResponse;
+import com.vehicle.exceptions.BadRequestException;
 import com.vehicle.exceptions.GlobalExceptionHandler;
 import com.vehicle.exceptions.NotFoundException;
 import com.vehicle.services.VehicleService;
@@ -28,6 +29,7 @@ import java.util.List;
 
 import static com.vehicle.mock.MockedValues.BRAND_BYD;
 import static com.vehicle.mock.MockedValues.BRAND_TOYOTA;
+import static com.vehicle.mock.MockedValues.FIVE;
 import static com.vehicle.mock.MockedValues.FOUR;
 import static com.vehicle.mock.MockedValues.ID;
 import static com.vehicle.mock.MockedValues.ID_NOT_EXIST;
@@ -35,6 +37,7 @@ import static com.vehicle.mock.MockedValues.ONE;
 import static com.vehicle.mock.MockedValues.ONE_LONG;
 import static com.vehicle.mock.MockedValues.ONE_STRING;
 import static com.vehicle.mock.MockedValues.SLASH;
+import static com.vehicle.mock.MockedValues.THE_NUMBER_OF_THE_YEAR_IS_DIFFERENT_FROM_FOUR;
 import static com.vehicle.mock.MockedValues.THREE;
 import static com.vehicle.mock.MockedValues.URL_CAR_REGISTRATION_WEEK;
 import static com.vehicle.mock.MockedValues.URL_COUNT_BRAND;
@@ -51,8 +54,10 @@ import static com.vehicle.mock.MockedValues.ZERO_STRING;
 import static com.vehicle.mock.VehicleCountResponseMock.getVehicleCountResponseMock;
 import static com.vehicle.mock.VehicleGetResponseMock.getVehicleGetResponse;
 import static com.vehicle.mock.VehiclePostRequestMock.getVehiclePostRequest;
+import static com.vehicle.mock.VehiclePostRequestMock.getVehiclePostYearDifferentThanFourRequest;
 import static com.vehicle.mock.VehiclePostResponseMock.getVehiclePostResponse;
 import static com.vehicle.mock.VehiclePutRequestMock.getVehiclePutRequest;
+import static com.vehicle.mock.VehiclePutRequestMock.getVehiclePutYearDifferentThanFourRequest;
 import static com.vehicle.mock.VehiclePutResponseMock.getVehiclePutResponse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -101,6 +106,22 @@ class VehicleControllerTest {
                 .andExpect(jsonPath("$.year").value(request.getYear()))
                 .andExpect(jsonPath("$.description").value(request.getDescription()))
                 .andExpect(jsonPath("$.sold").value(request.getSold()));
+    }
+
+    @Test
+    void shouldReturnBadRequestOnCreateWhenYearIsDifferentThanFour() throws Exception {
+        final VehiclePostRequest request = getVehiclePostYearDifferentThanFourRequest();
+
+        Mockito.when(vehicleService.createNewVehicle(any(VehiclePostRequest.class)))
+                .thenThrow(BadRequestException.theNumberOfTheYearIsDifferentFromFour());
+
+        mockMvc.perform(post(URL_VEHICLES)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.code").value(FIVE))
+                .andExpect(jsonPath("$.message").value(THE_NUMBER_OF_THE_YEAR_IS_DIFFERENT_FROM_FOUR));
     }
 
     @Test
@@ -159,6 +180,22 @@ class VehicleControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code").value(THREE))
                 .andExpect(jsonPath("$.message").value(VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE));
+    }
+
+    @Test
+    void shouldReturnBadRequestOnUpdateWhenYearIsDifferentThanFour() throws Exception {
+        final VehiclePutRequest request = getVehiclePutYearDifferentThanFourRequest();
+
+        Mockito.when(vehicleService.updateVehicle(eq(ID), any(VehiclePutRequest.class)))
+                .thenThrow(BadRequestException.theNumberOfTheYearIsDifferentFromFour());
+
+        mockMvc.perform(put(URL_VEHICLES + SLASH + ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.code").value(FIVE))
+                .andExpect(jsonPath("$.message").value(THE_NUMBER_OF_THE_YEAR_IS_DIFFERENT_FROM_FOUR));
     }
 
     @Test

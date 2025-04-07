@@ -1,6 +1,5 @@
 package com.vehicle.services;
 
-import com.vehicle.constants.ServiceConstants;
 import com.vehicle.domains.Vehicle;
 import com.vehicle.domains.vos.v1.requests.VehiclePostRequest;
 import com.vehicle.domains.vos.v1.requests.VehiclePutRequest;
@@ -8,8 +7,10 @@ import com.vehicle.domains.vos.v1.responses.VehicleCountResponse;
 import com.vehicle.domains.vos.v1.responses.VehicleGetResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePostResponse;
 import com.vehicle.domains.vos.v1.responses.VehiclePutResponse;
+import com.vehicle.exceptions.BadRequestException;
 import com.vehicle.exceptions.NotFoundException;
 import com.vehicle.repositories.VehicleRepository;
+import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,9 +23,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.List;
 import java.util.Optional;
 
+import static com.vehicle.exceptions.IssueEnum.THE_NUMBER_OF_THE_YEAR_IS_DIFFERENT_FROM_FOUR;
 import static com.vehicle.exceptions.IssueEnum.VEHICLES_DOES_NOT_EXIST_IN_THE_DATA_BASE;
 import static com.vehicle.exceptions.IssueEnum.VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE;
 import static com.vehicle.mock.MockedValues.BRAND_BYD;
@@ -34,8 +37,6 @@ import static com.vehicle.mock.MockedValues.ID;
 import static com.vehicle.mock.MockedValues.ID_NOT_EXIST;
 import static com.vehicle.mock.MockedValues.ONE;
 import static com.vehicle.mock.MockedValues.ONE_LONG;
-import static com.vehicle.mock.MockedValues.SEVEN;
-import static com.vehicle.mock.MockedValues.SEVEN_LONG;
 import static com.vehicle.mock.MockedValues.THREE;
 import static com.vehicle.mock.MockedValues.VEHICLE_ONE;
 import static com.vehicle.mock.MockedValues.YEAR_2007;
@@ -43,7 +44,9 @@ import static com.vehicle.mock.MockedValues.ZERO;
 import static com.vehicle.mock.MockedValues.ZERO_LONG;
 import static com.vehicle.mock.VehicleMock.getVehicleMock;
 import static com.vehicle.mock.VehiclePostRequestMock.getVehiclePostRequest;
+import static com.vehicle.mock.VehiclePostRequestMock.getVehiclePostYearDifferentThanFourRequest;
 import static com.vehicle.mock.VehiclePutRequestMock.getVehiclePutRequest;
+import static com.vehicle.mock.VehiclePutRequestMock.getVehiclePutYearDifferentThanFourRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -81,6 +84,24 @@ public class VehicleServiceTest {
         assertEquals(vehicleMock.getBrand(), newVehicleResponse.getBrand());
         assertEquals(vehicleMock.getSold(), newVehicleResponse.getSold());
         assertEquals(vehicleMock.getDescription(), newVehicleResponse.getDescription());
+    }
+
+    @Test
+    void shouldReturnBadRequestOnCreateWhenYearIsDifferentThanFour() {
+
+        final VehiclePostRequest vehiclePostRequest = getVehiclePostYearDifferentThanFourRequest();
+
+        final BadRequestException exception =
+                assertThrows(
+                        BadRequestException.class,
+                        () -> {
+                            vehicleService.createNewVehicle(vehiclePostRequest);;
+                            ;
+                        });
+
+        assertEquals(
+                THE_NUMBER_OF_THE_YEAR_IS_DIFFERENT_FROM_FOUR.getFormattedMessage(),
+                exception.getIssue().getMessage());
     }
 
     @Test
@@ -154,6 +175,24 @@ public class VehicleServiceTest {
 
         assertEquals(
                 VEHICLE_DOES_NOT_EXIST_IN_THE_DATA_BASE.getFormattedMessage(),
+                exception.getIssue().getMessage());
+    }
+
+    @Test
+    void shouldReturnBadRequestOnUpdateWhenYearIsDifferentThanFour() {
+
+        final VehiclePutRequest vehiclePutRequest = getVehiclePutYearDifferentThanFourRequest();
+
+        final BadRequestException exception =
+                assertThrows(
+                        BadRequestException.class,
+                        () -> {
+                            vehicleService.updateVehicle(ID, vehiclePutRequest);
+                            ;
+                        });
+
+        assertEquals(
+                THE_NUMBER_OF_THE_YEAR_IS_DIFFERENT_FROM_FOUR.getFormattedMessage(),
                 exception.getIssue().getMessage());
     }
 

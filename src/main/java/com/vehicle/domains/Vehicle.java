@@ -14,6 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static com.vehicle.constants.VehicleConstants.COLUMN_NAME_YEAR;
+import static com.vehicle.constants.VehicleConstants.TABLE_NAME;
+
 @Entity
 @Builder
 @Getter
@@ -21,7 +24,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name = "vehicle")
+@Table(name = TABLE_NAME)
 public class Vehicle extends BaseEntity {
 
     @Id
@@ -32,7 +35,7 @@ public class Vehicle extends BaseEntity {
 
     private String brand;
 
-    @Column(name = "\"year\"")
+    @Column(name = COLUMN_NAME_YEAR)
     private Integer year;
 
     private String description;
